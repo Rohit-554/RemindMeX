@@ -84,6 +84,7 @@ dependencies {
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("androidx.compose.material3:material3:1.4.0-alpha18")
+    implementation("com.airbnb.android:lottie-compose:6.6.6")
 
 
 }

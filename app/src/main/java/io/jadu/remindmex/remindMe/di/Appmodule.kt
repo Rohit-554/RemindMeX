@@ -12,6 +12,7 @@ import io.jadu.remindmex.remindMe.domain.usecase.DeleteReminderUseCase
 import io.jadu.remindmex.remindMe.domain.usecase.GetRemindersUseCase
 import io.jadu.remindmex.remindMe.domain.usecase.UpdateReminderUseCase
 import io.jadu.remindmex.remindMe.presentation.viewModels.LoginViewModel
+import io.jadu.remindmex.remindMe.presentation.viewModels.ReminderViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -32,5 +33,10 @@ val appModule = module {
     factory { DeleteReminderUseCase(get()) }
 
     viewModel { LoginViewModel() }
-    /*viewModel {  }*/ //ReminderViewModel
+    viewModel { ReminderViewModel(
+        get(),
+        get(),
+        get(),
+        get()
+    ) } //ReminderViewModel
 }
