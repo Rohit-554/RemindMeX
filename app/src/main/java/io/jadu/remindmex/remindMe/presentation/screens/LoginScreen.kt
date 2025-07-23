@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -72,6 +73,8 @@ import io.jadu.remindmex.remindMe.presentation.components.ui.GSignSwitchComp
 import io.jadu.remindmex.remindMe.presentation.components.ui.createBoldAnnotatedString
 import io.jadu.remindmex.remindMe.presentation.components.ui.showSnackBar
 import io.jadu.remindmex.remindMe.presentation.route.NavRoute
+import io.jadu.remindmex.remindMe.presentation.utils.ButtonUI
+import io.jadu.remindmex.remindMe.presentation.utils.CronosButton
 import io.jadu.remindmex.remindMe.presentation.utils.VSpacer
 import io.jadu.remindmex.remindMe.presentation.utils.bounceClickable
 import io.jadu.remindmex.remindMe.presentation.viewModels.AuthEvent
@@ -115,17 +118,20 @@ fun LoginScreen(
                     positiveMessage = false
                 )
             }
+
             is SignInState.Success -> {
                 showSnackBar(
                     message = "Welcome back, ${(signInState as SignInState.Success).userName}!",
                     positiveMessage = true
                 )
-                // Navigate to main screen or wherever you want after successful login
-                // rootNavController.navigate("main_screen") {
-                //     popUpTo("login") { inclusive = true }
-                // }
+
+                rootNavController.navigate(NavRoute.Home) {
+                    popUpTo(NavRoute.Login) { inclusive = true }
+                }
             }
-            else -> { /* Handle other states if needed */ }
+
+            else -> {
+            }
         }
     }
 
@@ -172,28 +178,15 @@ fun LoginScreen(
                         )
                         VSpacer(8.dp)
                         Text(
-                            "Welcome back! Please enter your details.",
+                            "Welcome back! Please Sign In to continue.",
                             style = BodyLarge().copy(fontWeight = FontWeight.Normal)
                         )
                     }
-                    VSpacer(16.dp)
+                    VSpacer(30.dp)
 
-                    // Google Sign-In Toggle
-                    GSignSwitchComp(
-                        title = "Enable Drive Sync",
-                        subtitle = "Sign in with Google to sync your notes",
-                        isChecked = isGoogleSignInEnabled,
-                        onCheckedChange = { enabled ->
-                            viewModel.setGoogleSignInEnabled(enabled)
-                        }
-                    )
-
-                    VSpacer(24.dp)
-
-                    // Sign-In Status Display
                     when (signInState) {
                         is SignInState.Loading -> {
-                            Row(
+                           /* Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
@@ -208,8 +201,9 @@ fun LoginScreen(
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 )
-                            }
+                            }*/
                         }
+
                         is SignInState.Success -> {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
@@ -239,6 +233,7 @@ fun LoginScreen(
                                 }
                             }
                         }
+
                         is SignInState.Error -> {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
@@ -258,44 +253,32 @@ fun LoginScreen(
                                     )
                                 )
                                 VSpacer(16.dp)
-                                Button(
+                                CronosButton(
+                                    text = "Retry",
                                     onClick = {
                                         viewModel.resetSignInState()
                                         if (isGoogleSignInEnabled) {
                                             viewModel.signInWithGoogle(context)
                                         }
                                     }
-                                ) {
-                                    Text("Retry")
-                                }
+                                )
                             }
                         }
+
                         is SignInState.Idle -> {
                             if (!isGoogleSignInEnabled) {
-                                GSignSwitchComp(
-                                    title = "Enable Google Sign-In",
-                                    subtitle = "Sign in with Google to sync your notes",
-                                    isChecked = isGoogleSignInEnabled,
-                                    onCheckedChange = { enabled ->
-                                        viewModel.setGoogleSignInEnabled(enabled)
-                                    }
+                                ButtonUI(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 16.dp)
+                                        .height(48.dp),
+                                    leadingIcon = painterResource(id = R.drawable.google_logo),
+                                    onClick = {
+                                        viewModel.signInWithGoogle(context)
+                                    },
+                                    text = "Sign In with Google",
+                                    enabled = true,
                                 )
-                                Button(
-                                    onClick = { viewModel.signInWithGoogle(context) },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.Login, // Add Google icon
-                                            contentDescription = "Google",
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Sign In with Google")
-                                    }
-                                }
                             }
                         }
                     }
@@ -303,7 +286,6 @@ fun LoginScreen(
             }
         }
 
-        // Loading Overlay (if you want to show full-screen loading)
         if (signInState is SignInState.Loading) {
             Box(
                 modifier = Modifier

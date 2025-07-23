@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +49,7 @@ fun ButtonUI(
     buttonType: ButtonType = ButtonType.Filled,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    leadingIcon: ImageVector? = null,
+    leadingIcon: Painter? = null,
     shape: Shape = RoundedCornerShape(40f),
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -96,7 +97,7 @@ fun ButtonUI(
             ) {
                 if (leadingIcon != null) {
                     Icon(
-                        imageVector = leadingIcon,
+                        painter = leadingIcon,
                         contentDescription = null,
                         tint = contentColor,
                         modifier = Modifier.size(iconSize)
@@ -116,7 +117,7 @@ fun ButtonUI(
 }
 
 @Composable
-fun BarfiButton(text:String, onClick: () -> Unit, modifier: Modifier = Modifier, isEnabled: Boolean = true) {
+fun CronosButton(text:String, onClick: () -> Unit, modifier: Modifier = Modifier, isEnabled: Boolean = true) {
     ButtonUI(
         modifier = modifier
             .fillMaxWidth()

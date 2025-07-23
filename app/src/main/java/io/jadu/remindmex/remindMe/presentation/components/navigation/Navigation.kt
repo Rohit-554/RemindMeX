@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -28,10 +26,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.jadu.remindmex.remindMe.presentation.components.ui.CustomSnackbarHost
 import io.jadu.remindmex.remindMe.presentation.route.NavRoute
+import io.jadu.remindmex.remindMe.presentation.screens.HomeScreen
 import io.jadu.remindmex.remindMe.presentation.screens.LoginScreen
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
 
@@ -90,6 +86,10 @@ fun AppRouting(startDestination: NavRoute, route: String) {
                 ){
                     composable<NavRoute.Login> {
                         LoginScreen(rootNavController)
+                    }
+
+                    composable<NavRoute.Home> {
+                        HomeScreen(rootNavController)
                     }
                 }
             }
