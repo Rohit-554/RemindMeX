@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.* // Ensure you have Material3 imports
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,7 +39,7 @@ import io.jadu.remindmex.remindMe.presentation.viewModels.ReminderViewModel
 import io.jadu.remindmex.ui.theme.BodyNormal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel // Assuming this is your Koin import
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
