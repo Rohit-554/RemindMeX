@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -31,19 +32,12 @@ class ReminderViewModel(
 
     val reminders = getRemindersUseCase()
         .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
+        .onEach { _uiState.value = _uiState.value.copy(isLoading = false) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
-        ).also {
-            viewModelScope.launch {
-                it.collect { list ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                    )
-                }
-            }
-        }
+        )
     
     fun addReminder(title: String, description: String, imageUri: Uri?) {
         viewModelScope.launch {

@@ -50,6 +50,7 @@ fun ButtonUI(
     enabled: Boolean = true,
     isLoading: Boolean = false,
     leadingIcon: Painter? = null,
+    leadingIconVector: ImageVector? = null,
     shape: Shape = RoundedCornerShape(40f),
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -98,6 +99,15 @@ fun ButtonUI(
                 if (leadingIcon != null) {
                     Icon(
                         painter = leadingIcon,
+                        contentDescription = null,
+                        tint = contentColor,
+                        modifier = Modifier.size(iconSize)
+                    )
+                    if (text.isNotEmpty()) Spacer(modifier = Modifier.width(8.dp))
+                }
+                if (leadingIconVector != null) {
+                    Icon(
+                        imageVector = leadingIconVector,
                         contentDescription = null,
                         tint = contentColor,
                         modifier = Modifier.size(iconSize)

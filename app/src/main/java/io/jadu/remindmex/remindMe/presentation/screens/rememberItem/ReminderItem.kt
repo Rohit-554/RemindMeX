@@ -29,7 +29,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import java.io.File
 import androidx.core.content.FileProvider
+import coil.compose.rememberAsyncImagePainter
 import io.jadu.remindmex.remindMe.data.models.Reminder
+import io.jadu.remindmex.remindMe.presentation.utils.ButtonUI
+import io.jadu.remindmex.remindMe.presentation.utils.CronosButton
+import io.jadu.remindmex.ui.theme.BodyLarge
+import io.jadu.remindmex.ui.theme.BodyNormal
+import io.jadu.remindmex.ui.theme.BodySmall
+import io.jadu.remindmex.ui.theme.ElementsColors
+import io.jadu.remindmex.ui.theme.MajorColors
 
 @Composable
 fun ReminderItem(
@@ -52,7 +60,7 @@ fun ReminderItem(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = reminder.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = BodyNormal(),
                         fontWeight = FontWeight.Bold,
                         textDecoration = if (reminder.isCompleted) TextDecoration.LineThrough else null
                     )
@@ -61,8 +69,7 @@ fun ReminderItem(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = reminder.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = BodyNormal(),
                         )
                     }
                     
@@ -71,8 +78,7 @@ fun ReminderItem(
                     Text(
                         text = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
                             .format(Date(reminder.timestamp)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = BodyNormal(),
                     )
                 }
                 
@@ -93,7 +99,7 @@ fun ReminderItem(
                         Icon(
                             Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = Color.Red
+                            tint = MajorColors.White.color
                         )
                     }
                 }
@@ -143,22 +149,24 @@ fun AddReminderDialog(
     
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add New Reminder") },
+        title = { Text("Add New Reminder", style = BodyLarge()) },
         text = {
             Column {
                 OutlinedTextField(
+                    shape = RoundedCornerShape(12.dp),
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Title") },
+                    label = { Text("Title", style = BodyNormal()) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 OutlinedTextField(
+                    shape = RoundedCornerShape(12.dp),
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") },
+                    label = { Text("Description", style = BodyNormal()) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
@@ -169,35 +177,17 @@ fun AddReminderDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(
+                    ButtonUI(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                            .height(48.dp),
                         onClick = { launcher.launch("image/*") },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Image, contentDescription = null)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Gallery")
-                    }
-                    
-                    Button(
-                        onClick = {
-                            val photoFile = File(
-                                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                                "reminder_${System.currentTimeMillis()}.jpg"
-                            )
-                            val photoUri = FileProvider.getUriForFile(
-                                context,
-                                "${context.packageName}.provider",
-                                photoFile
-                            )
-                            selectedImageUri = photoUri
-                            cameraLauncher.launch(photoUri)
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Camera, contentDescription = null)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Camera")
-                    }
+                        leadingIconVector = Icons.Default.Image,
+                        text = "Select Image",
+                        textStyle = BodyNormal(),
+                        contentColor = MajorColors.White.color
+                    )
                 }
                 
                 selectedImageUri?.let { uri ->
@@ -223,12 +213,12 @@ fun AddReminderDialog(
                 },
                 enabled = title.isNotBlank()
             ) {
-                Text("Add")
+                Text("Add", style = BodySmall())
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", style = BodySmall())
             }
         }
     )
