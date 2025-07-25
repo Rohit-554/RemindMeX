@@ -3,6 +3,9 @@
 Chronos is a modern Android reminder application that allows users to create, manage, and schedule reminders. It also features an optional AI-powered greeting generator for sharing motivational or friendly messages. Built using the latest Android tools and best practices.
 
 ---
+## Demo
+
+https://github.com/user-attachments/assets/cfe1d27c-25e5-42c7-84ae-31871fbd1a36
 
 ## Features
 
