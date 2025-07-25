@@ -1,5 +1,4 @@
-# Chronos – AI-Powered Reminder App
-
+# Chronos – AI-Powered Reminder App [Download Here](https://drive.google.com/file/d/1vsH37gW02wLrI0iLv0ptlbrJsKVuUZYn/view?usp=sharing)
 Chronos is a modern Android reminder application that allows users to create, manage, and schedule reminders. It also features an optional AI-powered greeting generator for sharing motivational or friendly messages. Built using the latest Android tools and best practices.
 
 ---
