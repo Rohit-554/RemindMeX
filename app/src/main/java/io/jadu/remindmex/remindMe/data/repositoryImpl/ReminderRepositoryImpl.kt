@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.cancellation.CancellationException
 
 class ReminderRepositoryImpl(
     private val firestore: FirebaseFirestore,
@@ -76,13 +77,19 @@ class ReminderRepositoryImpl(
     }
 
     override suspend fun uploadImage(uri: Uri): Result<String> {
+        val imageRef = storageRef.child("${System.currentTimeMillis()}.jpg")
+
         return try {
-            val imageRef = storageRef.child("${System.currentTimeMillis()}.jpg")
-            val uploadTask = imageRef.putFile(uri).await()
+            imageRef.putFile(uri).await()
             val downloadUrl = imageRef.downloadUrl.await()
             Result.success(downloadUrl.toString())
+        } catch (e: CancellationException) {
+            Log.w("ReminderRepositoryImpl", "Upload cancelled", e)
+            throw e // Always rethrow to allow coroutine to cancel properly
         } catch (e: Exception) {
+            Log.e("ReminderRepositoryImpl", "Upload failed", e)
             Result.failure(e)
         }
     }
+
 }

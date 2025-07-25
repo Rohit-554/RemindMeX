@@ -34,7 +34,7 @@ val appModule = module {
             .create(GeminiApiService::class.java)
     }
     single {
-        val apiKey = ""
+        val apiKey = "AIzaSyCRk2WL_Q0xkM3J-zjaZQtIxov7yMKtyv4"
         GenerateGreetingUseCase(get(), apiKey)
     }
     single<ReminderRepository> {

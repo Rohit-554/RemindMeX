@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import io.jadu.remindmex.R
 import io.jadu.remindmex.remindMe.data.models.Reminder
+import io.jadu.remindmex.remindMe.presentation.utils.bounceClickable
 import io.jadu.remindmex.ui.theme.BodyNormal
 import io.jadu.remindmex.ui.theme.MajorColors
 
@@ -34,7 +35,8 @@ import io.jadu.remindmex.ui.theme.MajorColors
 fun ReminderItem(
     reminder: Reminder,
     onToggleComplete: (Reminder) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onTapped: (Reminder) -> Unit
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
@@ -46,21 +48,13 @@ fun ReminderItem(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ){
-        IconButton(
-            onClick = {
-                onToggleComplete(reminder)
-            }
-        ) {
-            Icon(
-                imageVector = if (reminder.isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                contentDescription = if (reminder.isCompleted) "Mark as incomplete" else "Mark as complete",
-                tint = if (reminder.isCompleted) Color.Green else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset { IntOffset(offsetX.toInt(), 0) }
+                .bounceClickable {
+                    onTapped(reminder)
+                }
                 .draggable(
                     state = draggableState,
                     orientation = Orientation.Horizontal,
@@ -107,7 +101,7 @@ fun ReminderItem(
                         IconButton(onClick = { onDelete(reminder.id) }) {
                             Box(
                                 modifier = Modifier.background(
-                                    color = Color(0xff1f2b37),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     shape = CircleShape
                                 ).size(32.dp),
                                 contentAlignment = Alignment.Center

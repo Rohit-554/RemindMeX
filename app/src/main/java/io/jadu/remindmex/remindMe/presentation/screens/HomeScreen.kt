@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -58,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import io.jadu.remindmex.remindMe.data.models.Reminder
 import io.jadu.remindmex.remindMe.presentation.components.ui.showSnackBar
 import io.jadu.remindmex.remindMe.presentation.route.NavRoute
@@ -73,6 +76,7 @@ import io.jadu.remindmex.ui.theme.BodySmall
 import io.jadu.remindmex.ui.theme.ElementsColors
 import io.jadu.remindmex.ui.theme.H1TextStyle
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -155,6 +159,7 @@ fun ReminderScreen(
     authViewModel: LoginViewModel = koinViewModel(),
     navController: NavController
 ) {
+    val userName = Firebase.auth.currentUser?.displayName ?: "User"
     val selectedDate = remember { mutableStateOf(LocalDate.now()) }
     var expanded by remember { mutableStateOf(false) }
     val filteredReminders = reminders.filter {
@@ -250,7 +255,7 @@ fun ReminderScreen(
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            Text("Hi, You completing plan!", style = BodyNormal().copy(fontWeight = FontWeight.Bold))
+            Text("Hi ${userName}, You completing plan!", style = BodyNormal().copy(fontWeight = FontWeight.Bold))
             Spacer(Modifier.height(4.dp))
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
@@ -288,7 +293,7 @@ fun ReminderScreen(
                     }
 
                     "list" -> LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        filteredReminders.sortedBy { it.timestamp }.groupBy {
+                        filteredReminders.sortedByDescending { it.timestamp }.groupBy {
                             it.timestamp.toLocalDate()
                         }.forEach { (date, groupedReminders) ->
                             item {
@@ -309,8 +314,12 @@ fun ReminderScreen(
                                     ReminderItem(
                                         reminder = reminder,
                                         onToggleComplete = onToggleComplete,
-                                        onDelete = { onDelete(reminder) }
+                                        onDelete = { onDelete(reminder) },
+                                        onTapped = { selectedReminder ->
+                                            navController.navigate("add_reminder/${selectedReminder.id}")
+                                        }
                                     )
+
                                 }
                             }
 

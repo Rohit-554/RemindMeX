@@ -13,7 +13,8 @@ sealed class NavRoute {
     @Serializable
     data object AddReminder:NavRoute()
 
+
     @Serializable
-    data object ReminderDetails:NavRoute()
+    data class ReminderDetails(val reminderId: String? = null) : NavRoute()
 
 }

@@ -21,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import io.jadu.remindmex.remindMe.presentation.components.ui.CustomSnackbarHost
 import io.jadu.remindmex.remindMe.presentation.route.NavRoute
 import io.jadu.remindmex.remindMe.presentation.screens.HomeScreen
@@ -85,6 +87,15 @@ fun AppRouting(startDestination: NavRoute, route: String) {
                                 )
                     }
                 ){
+                    composable(
+                        route = "add_reminder/{reminderId}",
+                        arguments = listOf(navArgument("reminderId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val reminderId = backStackEntry.arguments?.getString("reminderId")
+                        AddReminderScreen(rootNavController, reminderId = reminderId)
+                    }
+
+
                     composable<NavRoute.Login> {
                         LoginScreen(rootNavController)
                     }

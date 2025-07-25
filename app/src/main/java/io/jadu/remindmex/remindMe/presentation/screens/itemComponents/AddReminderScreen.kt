@@ -23,6 +23,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import io.jadu.remindmex.remindMe.data.models.Reminder
 import io.jadu.remindmex.remindMe.presentation.components.ui.CustomDatePickerDialog
@@ -36,13 +37,18 @@ import io.jadu.remindmex.ui.theme.ElementsColors
 import io.jadu.remindmex.ui.theme.MajorColors
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
+import androidx.core.net.toUri
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AddReminderScreen(
     navController: NavController,
-    viewModel: ReminderViewModel = koinViewModel()
+    viewModel: ReminderViewModel = koinViewModel(),
+    reminderId:String? = null
 ) {
+    val reminders by viewModel.reminders.collectAsState()
+    val reminder = reminders.find { it.id == reminderId }
+
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -51,7 +57,26 @@ fun AddReminderScreen(
     var selectedTime by remember { mutableStateOf("") }
     var selectedTimeValue by remember { mutableStateOf<Long?>(null) }
     var showTimePicker by remember { mutableStateOf(false) }
-
+    var isNewReminder by remember { mutableStateOf(reminder == null) }
+    val context = LocalContext.current
+    val state by viewModel.uiState.collectAsState()
+    val isLoading = state.isLoading
+    val isCompleted = state.message
+    LaunchedEffect(reminder) {
+        if (reminder != null) {
+            title = reminder.title
+            description = reminder.description ?: ""
+            selectedImageUri = reminder.imageUrl.takeIf { it.isNotBlank() }?.let { it.toUri() }
+            selectedDate = reminder.timestamp
+        } else {
+            title = ""
+            description = ""
+            selectedImageUri = null
+            selectedDate = null
+            selectedTime = ""
+            selectedTimeValue = null
+        }
+    }
     val calendar = Calendar.getInstance()
 
     val launcher = rememberLauncherForActivityResult(
@@ -71,7 +96,7 @@ fun AddReminderScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Add New Note",
+                        "Add New Reminder",
                         style = BodyXLarge()
                     )
                 },
@@ -109,17 +134,40 @@ fun AddReminderScreen(
                     IconButton(
                         onClick = {
                             if (title.isNotBlank()) {
-                                viewModel.addReminder(
-                                    title,
-                                    description,
-                                    selectedImageUri,
-                                    time = time
-                                )
-                                showSnackBar(
-                                    message = "Reminder added successfully",
-                                    positiveMessage = true
-                                )
-                                navController.navigateUp()
+                                if(!isNewReminder) {
+                                    viewModel.updateReminder(
+                                        Reminder(
+                                            id = reminderId ?: "",
+                                            title = title,
+                                            description = description,
+                                            imageUrl = selectedImageUri?.toString() ?: "",
+                                            timestamp = time ?: System.currentTimeMillis()
+                                        )
+                                    )
+                                    selectedImageUri.takeIf { it != null }?.let {
+                                        showSnackBar(
+                                            message = "Upload in progress, please wait",
+                                            positiveMessage = true,
+                                            duration = SnackbarDuration.Long
+                                        )
+                                    }
+                                } else {
+                                    viewModel.addReminder(
+                                        context,
+                                        title,
+                                        description,
+                                        selectedImageUri,
+                                        time = time
+                                    )
+                                    selectedImageUri.takeIf { it != null }?.let {
+                                        showSnackBar(
+                                            message = "Upload in progress, please wait",
+                                            positiveMessage = true,
+                                            duration = SnackbarDuration.Long
+                                        )
+                                    }
+                                }
+                                //navController.navigateUp()
                             }
                         },
                         enabled = title.isNotBlank()
@@ -219,6 +267,31 @@ fun AddReminderScreen(
 
             Spacer(modifier = Modifier.weight(1f))
         }
+    }
+
+    LaunchedEffect(isLoading) {
+        if (isLoading) {
+            kotlinx.coroutines.delay(500)
+        }
+    }
+
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularWavyProgressIndicator()
+        }
+    }
+    if(!isCompleted.isNullOrBlank()) {
+        showSnackBar(
+            message = "Reminder added successfully",
+            positiveMessage = true,
+            duration = SnackbarDuration.Long
+        )
+        navController.navigateUp()
     }
 
     if (showDatePicker) {

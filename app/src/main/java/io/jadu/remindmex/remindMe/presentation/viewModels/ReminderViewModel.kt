@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import androidx.compose.material3.SnackbarDuration
@@ -17,6 +19,7 @@ import io.jadu.remindmex.remindMe.domain.usecase.DeleteReminderUseCase
 import io.jadu.remindmex.remindMe.domain.usecase.GenerateGreetingUseCase
 import io.jadu.remindmex.remindMe.domain.usecase.GetRemindersUseCase
 import io.jadu.remindmex.remindMe.domain.usecase.UpdateReminderUseCase
+import io.jadu.remindmex.remindMe.domain.usecase.UploadState
 import io.jadu.remindmex.remindMe.presentation.components.ui.showSnackBar
 import io.jadu.remindmex.remindMe.services.ReminderReceiver
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +33,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.net.URL
 import java.net.URLEncoder
 
@@ -165,7 +170,8 @@ class ReminderViewModel(
         }
     }
 
-    fun addReminder(title: String, description: String, imageUri: Uri?, time:Long? = null) {
+    fun addReminder(context:Context, title: String, description: String, imageUri: Uri?, time: Long? = null) {
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
@@ -175,18 +181,44 @@ class ReminderViewModel(
                 timestamp = time ?: System.currentTimeMillis(),
             )
 
-            val result = addReminderUseCase(reminder, imageUri)
-            if (result.isSuccess) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    message = "Reminder added successfully"
-                )
-            } else {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = result.exceptionOrNull()?.message ?: "Failed to add reminder"
-                )
+            var compressedUri: Uri? = null
+            if (imageUri != null) {
+                withContext(Dispatchers.IO) {
+                    val inputStream = context.contentResolver.openInputStream(imageUri)
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+                    inputStream?.close()
+
+                    val file = File(context.cacheDir, "compressed_${System.currentTimeMillis()}.jpg")
+                    val outputStream = FileOutputStream(file)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+                    outputStream.flush()
+                    outputStream.close()
+                    compressedUri = Uri.fromFile(file)
+                }
             }
+
+            val result = addReminderUseCase(reminder, compressedUri).collect{state->
+                when (state) {
+                    is UploadState.Uploading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is UploadState.Success -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            message = state.message
+                        )
+                        scheduleReminder(context, reminder)
+                    }
+                    is UploadState.Error -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = state.throwable.message ?: "Failed to add reminder"
+                        )
+                    }
+                }
+
+            }
+
         }
     }
     
