@@ -262,10 +262,12 @@ fun ReminderScreen(
                 progress = { completionRate },
             )
             Text(
-                "${filteredReminders.count { !it.isCompleted }} more meds to go",
+                if (filteredReminders.count { !it.isCompleted } == 0)
+                    "Let's create your first reminder"
+                else
+                    "${filteredReminders.count { !it.isCompleted }} more meds to go",
                 style = BodySmall()
             )
-
             Spacer(Modifier.height(16.dp))
 
             DateSelector(
