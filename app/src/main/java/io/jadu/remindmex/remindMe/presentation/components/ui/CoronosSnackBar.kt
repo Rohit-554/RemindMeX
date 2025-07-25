@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.offset
 import androidx.compose.ui.zIndex
+import io.jadu.remindmex.ui.theme.BodyNormal
+import io.jadu.remindmex.ui.theme.MajorColors
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -153,7 +155,7 @@ fun CoronosSnackBar(
         ) {
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = if (isSuccess) Color(0xFF4CAF50) else Color(0xFFF44336),
+                color = if (isSuccess) Color(0xFF4CAF50) else MaterialTheme.colorScheme.errorContainer,
                 tonalElevation = 6.dp,
                 shadowElevation = 8.dp,
                 modifier = Modifier
@@ -174,7 +176,7 @@ fun CoronosSnackBar(
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = message,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
+                        style = BodyNormal().copy(color = MajorColors.White.color)
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = onDismiss) {

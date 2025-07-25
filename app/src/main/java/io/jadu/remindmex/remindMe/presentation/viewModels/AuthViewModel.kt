@@ -85,6 +85,9 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    fun logout() {
+        signOut()
+    }
     private fun createCredentialRequest(): GetCredentialRequest {
         val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(GOOGLE_CLIENT_ID)
             .build()
@@ -158,7 +161,7 @@ class LoginViewModel : ViewModel() {
     }
 
     // Sign out
-    fun signOut() {
+    private fun signOut() {
         viewModelScope.launch {
             try {
                 Firebase.auth.signOut()

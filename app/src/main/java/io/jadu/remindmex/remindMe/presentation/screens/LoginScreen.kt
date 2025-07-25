@@ -186,22 +186,22 @@ fun LoginScreen(
 
                     when (signInState) {
                         is SignInState.Loading -> {
-                           /* Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    strokeWidth = 2.dp
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    "Signing in...",
-                                    style = BodyLarge().copy(
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                )
-                            }*/
+                            /* Row(
+                                 verticalAlignment = Alignment.CenterVertically,
+                                 horizontalArrangement = Arrangement.Center
+                             ) {
+                                 CircularProgressIndicator(
+                                     modifier = Modifier.size(20.dp),
+                                     strokeWidth = 2.dp
+                                 )
+                                 Spacer(modifier = Modifier.width(12.dp))
+                                 Text(
+                                     "Signing in...",
+                                     style = BodyLarge().copy(
+                                         color = MaterialTheme.colorScheme.primary
+                                     )
+                                 )
+                             }*/
                         }
 
                         is SignInState.Success -> {
@@ -224,7 +224,12 @@ fun LoginScreen(
                                 )
                                 VSpacer(16.dp)
                                 Button(
-                                    onClick = { viewModel.signOut() },
+                                    onClick = {
+                                        viewModel.logout()
+                                        rootNavController.navigate(
+                                            NavRoute.Login
+                                        )
+                                    },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.outline
                                     )

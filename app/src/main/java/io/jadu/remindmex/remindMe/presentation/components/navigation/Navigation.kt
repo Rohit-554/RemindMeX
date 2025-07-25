@@ -28,6 +28,7 @@ import io.jadu.remindmex.remindMe.presentation.components.ui.CustomSnackbarHost
 import io.jadu.remindmex.remindMe.presentation.route.NavRoute
 import io.jadu.remindmex.remindMe.presentation.screens.HomeScreen
 import io.jadu.remindmex.remindMe.presentation.screens.LoginScreen
+import io.jadu.remindmex.remindMe.presentation.screens.itemComponents.AddReminderScreen
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
 
@@ -90,6 +91,10 @@ fun AppRouting(startDestination: NavRoute, route: String) {
 
                     composable<NavRoute.Home> {
                         HomeScreen(rootNavController)
+                    }
+
+                    composable<NavRoute.AddReminder> {
+                        AddReminderScreen(rootNavController)
                     }
                 }
             }

@@ -2,6 +2,7 @@ package io.jadu.remindmex.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -9,8 +10,15 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import io.jadu.remindmex.remindMe.presentation.screens.ThemeOption
+import io.jadu.remindmex.remindMe.presentation.viewModels.ThemeViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 enum class MajorColors(val color: Color) {
@@ -22,6 +30,7 @@ enum class MajorColors(val color: Color) {
     White(Color(0xFFFFFFFF)),
     Black(Color(0xFF000000)),
     Secondary(Color(0xFF2F4858)),
+    RoseRed(Color(0xFFFF033E))
 }
 
 enum class ElementsColors(val color: Color) {
@@ -68,16 +77,27 @@ fun RemindMeXTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val themeViewModel: ThemeViewModel = koinViewModel()
+    val selectedTheme by themeViewModel.selectedTheme
+    Log.d(
+        "RemindMeXTheme",
+        "Selected theme: $selectedTheme, Dark theme: $darkTheme, Dynamic color: $dynamicColor"
+    )
+    val colorScheme = when (selectedTheme) {
+        ThemeOption.SYSTEM -> {
+            if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            } else if (darkTheme) {
+                DarkColorScheme
+            } else {
+                LightColorScheme
+            }
         }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        ThemeOption.DARK -> DarkColorScheme
+        ThemeOption.LIGHT -> LightColorScheme
     }
 
     MaterialTheme(

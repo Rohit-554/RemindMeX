@@ -85,6 +85,9 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("androidx.compose.material3:material3:1.4.0-alpha18")
     implementation("com.airbnb.android:lottie-compose:6.6.6")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.google.code.gson:gson:2.13.1")
 
 
 }

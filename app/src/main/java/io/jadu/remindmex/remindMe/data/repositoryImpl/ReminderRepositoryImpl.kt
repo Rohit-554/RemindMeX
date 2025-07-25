@@ -2,6 +2,7 @@ package io.jadu.remindmex.remindMe.data.repositoryImpl
 
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -50,9 +51,17 @@ class ReminderRepositoryImpl(
 
     override suspend fun updateReminder(reminder: Reminder): Result<Unit> {
         return try {
+            Log.d(
+                "ReminderRepositoryImpl",
+                "Updating reminder: ${reminder.id}, title: ${reminder.isCompleted}"
+            )
             remindersCollection.document(reminder.id).set(reminder).await()
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.d(
+                "ReminderRepositoryImpl",
+                "Error updating reminder: ${reminder.id}, error: ${e.message}"
+            )
             Result.failure(e)
         }
     }
