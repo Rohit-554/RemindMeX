@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import io.jadu.remindmex.remindMe.data.models.Reminder
 import io.jadu.remindmex.remindMe.presentation.components.ui.CustomDatePickerDialog
@@ -318,5 +319,15 @@ fun AddReminderScreen(
             },
             initialTime = calendar.timeInMillis
         )
+    }
+}
+
+@Preview
+@Composable
+fun MyComponent() {
+    var count = 0
+
+    Button(onClick = { count++ }) {
+        Text("Count: $count")
     }
 }
